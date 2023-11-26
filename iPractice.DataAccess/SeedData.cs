@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using iPractice.DataAccess.Models;
+using iPractice.Application.Contract.Dtos;
 
 namespace iPractice.DataAccess
 {
@@ -28,17 +28,17 @@ namespace iPractice.DataAccess
             _context.SaveChanges();
         }
 
-        private static List<Client> CreateClients(List<Psychologist> psychologists)
+        private static List<ClientDto> CreateClients(List<PsychologistDto> psychologists)
         {
             var random = new Random();
             
-            List<Client> clients = new List<Client>();
+            List<ClientDto> clients = new List<ClientDto>();
             for (int i = 0; i < NoClients; i++)
             {
-                clients.Add(new Client()
+                clients.Add(new ClientDto()
                 {
                     Name = $"Client {i + 1}",
-                    Psychologists = new List<Psychologist>(new[]
+                    Psychologists = new List<PsychologistDto>(new[]
                     {
                         psychologists.Skip(random.Next(NoPsychologists)).First(),
                         psychologists.Skip(random.Next(NoPsychologists)).First()
@@ -49,12 +49,12 @@ namespace iPractice.DataAccess
             return clients;
         }
 
-        private static List<Psychologist> CreatePsychologists()
+        private static List<PsychologistDto> CreatePsychologists()
         {
-            List<Psychologist> psychologists = new List<Psychologist>();
+            List<PsychologistDto> psychologists = new List<PsychologistDto>();
             for (int i = 0; i < NoPsychologists; i++)
             {
-                psychologists.Add(new Psychologist
+                psychologists.Add(new PsychologistDto
                 {
                     Name = $"Psychologist {i + 1}"
                 });

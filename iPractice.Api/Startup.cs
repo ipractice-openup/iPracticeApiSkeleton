@@ -1,4 +1,9 @@
+using AutoMapper;
+using iPractice.Application.Mapping;
+using iPractice.Application.Services;
 using iPractice.DataAccess;
+using iPractice.Interfaces.DataAccess;
+using iPractice.Interfaces.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -6,6 +11,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System;
 
 namespace iPractice.Api
 {
@@ -28,12 +34,25 @@ namespace iPractice.Api
                     Version = "v1",
                     Title = " iPractice APIs"
                 });
-
-
             });
             
-            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(Configuration.GetConnectionString("Sqlite")));
 
+            // services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            var mapperConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new MapperProfile());
+            });
+
+            IMapper mapper = mapperConfig.CreateMapper();
+            services.AddSingleton(mapper);
+
+            services.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(Configuration.GetConnectionString("Sqlite")));
+            services.AddSingleton<RepositoryFactories, RepositoryFactories>();
+            services.AddScoped<IRepositoryProvider, RepositoryProvider>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IAvailabilityService, AvailabilityService>();
+            services.AddScoped<IBookingService, BookingService>();
+            services.AddScoped<IPsychologistService, PsychologistService>();
             services.AddControllers();
         }
 

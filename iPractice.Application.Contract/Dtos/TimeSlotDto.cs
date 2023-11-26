@@ -1,13 +1,14 @@
 ﻿using System;
 
-namespace iPractice.Api.Models
+namespace iPractice.Application.Contract.Dtos
 {
-    public class TimeSlot
+    public class TimeSlotDto
     {
         public long Id { get; set; }
         public DateTime DateTimeFrom { get; set; }
         public DateTime DateTimeTo { get; set; }
         public long? ClientId { get; set; }
-        public bool IsBooked { get { return ClientId.HasValue && ClientId.Value != 0; } }
+        public long AvailabilityId { get; set; }
+        public AvailabilityDto Availability { get; set; }
     }
 }
