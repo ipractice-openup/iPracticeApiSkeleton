@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
+using iPractice.Api.Helpers;
 using iPractice.Api.Models;
+using iPractice.Interfaces.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -13,10 +16,14 @@ namespace iPractice.Api.Controllers
     public class ClientController : ControllerBase
     {
         private readonly ILogger<ClientController> _logger;
+        private readonly IAvailabilityService _availabilityService;
+        private readonly IBookingService _bookingService;
         
-        public ClientController(ILogger<ClientController> logger)
+        public ClientController(ILogger<ClientController> logger, IAvailabilityService availabilityService, IBookingService bookingService)
         {
             _logger = logger;
+            _availabilityService = availabilityService;
+            _bookingService = bookingService;
         }
         
         /// <summary>
@@ -27,9 +34,11 @@ namespace iPractice.Api.Controllers
         /// <returns>All time slots for the selected client</returns>
         [HttpGet("{clientId}/timeslots")]
         [ProducesResponseType(typeof(IEnumerable<TimeSlot>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<TimeSlot>>> GetAvailableTimeSlots(long clientId)
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<IEnumerable<TimeSlot>>> GetAvailableTimeSlots([FromRoute] long clientId)
         {
-            throw new NotImplementedException();
+            var availabilities = await _availabilityService.GetAvailableTimeSlotsAsync(clientId);
+            return Ok(Mapper.MapTimeSlots(availabilities));
         }
 
         /// <summary>
@@ -39,11 +48,28 @@ namespace iPractice.Api.Controllers
         /// <param name="timeSlot">Identifies the client and availability slot</param>
         /// <returns>Ok if appointment was made</returns>
         [HttpPost("{clientId}/appointment")]
-        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.Created)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
-        public async Task<ActionResult> CreateAppointment(long clientId, [FromBody] TimeSlot timeSlot)
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        [ProducesResponseType((int)HttpStatusCode.InternalServerError)]
+        public async Task<ActionResult> CreateAppointment([FromRoute] long clientId, [FromBody] TimeSlot timeSlot)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var existingTimeSlot = await _bookingService.GetTimeSlotAsync(timeSlot.Id);
+                if (existingTimeSlot == null)
+                {
+                    return NotFound("Resource with given parameters was not found!");
+                }
+
+                await _bookingService.CreateAppointmentAsync(clientId, timeSlot.Id);
+                return new StatusCodeResult(StatusCodes.Status201Created);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Unexpected error occurs during entity creation. Please try again later.");
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
     }
 }
