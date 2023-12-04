@@ -37,8 +37,9 @@ namespace iPractice.Api.Controllers
         /// <param name="availability">Availability</param>
         /// <returns>Ok if the availability was created</returns>
         [HttpPost("{psychologistId}/availability")]
-        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Availability), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult> CreateAvailability([FromRoute] long psychologistId, [FromBody] Availability availability)
         {
             var result = await _availabilityService.CreateAsync(new Domain.Models.Availability

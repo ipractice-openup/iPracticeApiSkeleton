@@ -62,8 +62,9 @@ namespace iPractice.Api.Controllers
         /// <param name="timeSlot">Identifies the client and availability slot</param>
         /// <returns>Ok if appointment was made</returns>
         [HttpPost("{clientId}/appointment")]
-        [ProducesResponseType(typeof(bool), (int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(Appointment), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<ActionResult> CreateAppointment(long clientId, [FromBody] TimeSlot timeSlot)
         {
             var result = await _appointmentsService.CreateAsync(new Appointment
