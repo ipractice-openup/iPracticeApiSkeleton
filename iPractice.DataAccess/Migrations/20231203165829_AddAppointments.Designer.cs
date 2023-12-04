@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using iPractice.DataAccess;
 
 namespace iPractice.DataAccess.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20231203165829_AddAppointments")]
+    partial class AddAppointments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -56,28 +58,6 @@ namespace iPractice.DataAccess.Migrations
                     b.HasIndex("PsychologistId");
 
                     b.ToTable("Appointments");
-                });
-
-            modelBuilder.Entity("iPractice.DataAccess.Models.Availability", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("End")
-                        .HasColumnType("TEXT");
-
-                    b.Property<long?>("PsychologistId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("Start")
-                        .HasColumnType("TEXT");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PsychologistId");
-
-                    b.ToTable("Availabilities");
                 });
 
             modelBuilder.Entity("iPractice.DataAccess.Models.Client", b =>
@@ -134,15 +114,6 @@ namespace iPractice.DataAccess.Migrations
                         .HasForeignKey("PsychologistId");
 
                     b.Navigation("Client");
-
-                    b.Navigation("Psychologist");
-                });
-
-            modelBuilder.Entity("iPractice.DataAccess.Models.Availability", b =>
-                {
-                    b.HasOne("iPractice.DataAccess.Models.Psychologist", "Psychologist")
-                        .WithMany()
-                        .HasForeignKey("PsychologistId");
 
                     b.Navigation("Psychologist");
                 });

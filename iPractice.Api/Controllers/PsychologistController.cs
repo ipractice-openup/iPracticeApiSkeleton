@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 using iPractice.Api.Models;
+using iPractice.DataAccess.Models;
+using iPractice.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Availability = iPractice.Api.Models.Availability;
 
 namespace iPractice.Api.Controllers
 {
@@ -13,10 +16,12 @@ namespace iPractice.Api.Controllers
     public class PsychologistController : ControllerBase
     {
         private readonly ILogger<PsychologistController> _logger;
+        private readonly IAvailabilityService _availabilityService;
 
-        public PsychologistController(ILogger<PsychologistController> logger)
+        public PsychologistController(ILogger<PsychologistController> logger, IAvailabilityService availabilityService)
         {
             _logger = logger;
+            _availabilityService = availabilityService;
         }
 
         [HttpGet]
@@ -36,7 +41,14 @@ namespace iPractice.Api.Controllers
         [ProducesResponseType((int)HttpStatusCode.BadRequest)]
         public async Task<ActionResult> CreateAvailability([FromRoute] long psychologistId, [FromBody] Availability availability)
         {
-            throw new NotImplementedException();
+            var result = await _availabilityService.CreateAsync(new Domain.Models.Availability
+            {
+                PsychologistId = psychologistId,
+                Start = availability.Start,
+                End = availability.End
+            });
+
+            return Ok(result);
         }
 
         /// <summary>
