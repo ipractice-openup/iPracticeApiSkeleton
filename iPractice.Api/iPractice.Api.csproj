@@ -25,6 +25,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\iPractice.DataAccess\iPractice.DataAccess.csproj" />
+    <ProjectReference Include="..\iPractice.Domain\iPractice.Domain.csproj" />
   </ItemGroup>
 
 
